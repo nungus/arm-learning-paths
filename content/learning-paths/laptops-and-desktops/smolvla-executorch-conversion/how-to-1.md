@@ -1,0 +1,90 @@
+---
+title: Understand the SmolVLA-ExecuTorch workflow
+weight: 2
+
+### FIXED, DO NOT MODIFY
+layout: learningpathall
+---
+
+## SmolVLA architecture
+[SmolVLA](https://arxiv.org/pdf/2506.01844) is a lightweight vision-language-action model with around 450 million parameters. \
+It takes camera images, a language instruction, and the robot state as inputs, and outputs a sequence of robot actions.
+
+![SmolVLA Architecture#center](smolvla_architecture.png "Architecture diagram from the SmolVLA paper.")
+
+The embedded Vision-Language model processes and concatenates the inputs into a multimodal sequence of context tokens known as the **prefix**.
+
+LeRobot's provided SmolVLA checkpoint is configured with:
+- 3 camera image inputs.
+- 48-language-token instruction padding.
+- 10 iterations of flow matching in the action expert.
+
+After denoising, the action expert outputs a clean robot action chunk of shape `[1, 50, 32]`. The provided checkpoint only uses 6 real action dimensions, so padding is removed, leaving a `[1, 50, 6]` tensor. This represents a 50-step action trajectory for each action dimension.
+
+## ExecuTorch workflow overview
+ExecuTorch provides a common platform for edge AI inference deployment.
+
+On a high level, you first export your PyTorch model to a hardware-unspecific ExecuTorch intermediate representation (IR). \
+Next, you use a suitable backend to "lower" your model to optimize it for your target hardware. We will use the [XNNPACK backend](https://github.com/google/XNNPACK), which enables highly-optimized Arm CPU inference.
+
+The model stages in the ExecuTorch conversion pipeline are:
+```
+PyTorch model (SmolVLA)
+      │
+      │  torch.export.export(...)
+      v
+ExportedProgram
+      │
+      │  to_edge(...)
+      v
+ExecuTorch Edge IR
+      │
+      │  partition with XnnpackPartitioner
+      │  lower supported subgraphs to XNNPACK
+      v
+Edge program with XNNPACK delegate calls
+      │
+      │  to_executorch()
+      v
+Serialized ExecuTorch program (.pte)
+      │
+      │  loaded by native ExecuTorch runtime
+      v
+ExecuTorch runtime
+      │
+      ├─ XNNPACK delegate kernels
+      │
+      └─ portable CPU fallback ops
+      v
+Arm CPU
+```
+
+#### Partitioning and lowering
+After `torch.export`, the model is represented as a graph of ATen operations.
+
+The XNNPACK partitioner inspects this graph and groups the operations that
+XNNPACK can execute. These supported regions are replaced with delegate calls
+that will be handled by the XNNPACK backend at runtime.
+
+During lowering, ExecuTorch converts the partitioned Edge IR into an executable
+program representation. XNNPACK-supported subgraphs are serialized for
+XNNPACK delegate kernels, while unsupported operations remain in the ExecuTorch graph
+and run with portable CPU kernels.
+
+Where possible, higher-level operations may also be decomposed into simpler
+ATen operations that can be backend-delegated.
+
+### Split architecture
+We will separately apply exportation and lowering three times: once for each of the **vision encoder**, **prefix forward pass**, and **denoising step**.
+
+There are multiple reasons why this decoupling is beneficial compared to a whole-model export:
+- The pinned ExecuTorch version exports the whole denoising for-loop by copying the single-step graph 10 times. This massively prolongs lowering and introduces unnecessary memory overhead.
+- We will utilise different numbers of CPU cores to independently optimize the `vision`, `prefix` and `denoise` executions.
+- The latency overhead introduced by wiring the I/O of the three components is negligible, and far outweighed by the above optimization.
+- It is a standard [LeRobot SmolVLA](https://huggingface.co/lerobot/smolvla_base) development split because it provides immediate access to denoising without needing to re-run the vision and prefix stages, which are more costly than one denoising step.
+
+
+## What you've learned and what's next
+You now have an understanding of the SmolVLA architecture, and a mental image of the model's progression through the ExecuTorch pipeline.
+
+Next, you will set up your environment and obtain necessary resources for your own conversion.
