@@ -100,6 +100,7 @@ fi
 export EXECUTORCH_ROOT
 export EXECUTORCH_BUILD_DIR="$EXECUTORCH_ROOT/cmake-out-xnnpack"
 export PYTHON_EXECUTABLE="$VENV/bin/python"
+export SMOLVLA_CHECKPOINT="$CHECKPOINT"
 if ((SKIP_RUNTIME == 0)); then
     "$ROOT/scripts/build_runtime.sh"
 fi

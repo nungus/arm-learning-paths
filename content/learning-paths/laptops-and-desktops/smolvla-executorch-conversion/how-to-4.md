@@ -31,7 +31,7 @@ lscpu -e=CPU,ONLINE,MAXMHZ,MODELNAME
 ```
 
 For example, the layout on an NVIDIA DGX Spark:
-``` {output_lines = "1-21"}
+```output
 CPU ONLINE    MAXMHZ MODELNAME
   0    yes 2808.0000 Cortex-A725
   1    yes 2808.0000 Cortex-A725

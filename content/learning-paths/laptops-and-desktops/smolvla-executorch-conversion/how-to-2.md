@@ -40,7 +40,24 @@ source env.sh
 ```
 
 ## Verify the resources
-TODO
+
+The setup script performs this check automatically. Run it again to verify the
+pinned packages, ExecuTorch revision and Python binding, XNNPACK and KleidiAI
+runtime build, and SmolVLA checkpoint files:
+
+```bash
+python scripts/check_environment.py
+```
+
+A successful check looks like:
+
+```output
+Environment OK: aarch64, ExecuTorch e4d02f41
+  Python: /path/to/smolvla-executorch-arm/.venv/bin/python
+  ExecuTorch: /path/to/smolvla-executorch-arm/toolchain/executorch
+  Runtime: /path/to/smolvla-executorch-arm/toolchain/executorch/cmake-out-xnnpack
+  Checkpoint: /path/to/smolvla-executorch-arm/checkpoints/smolvla_base
+```
 
 
 ## What you've accomplished and what's next
