@@ -13,10 +13,9 @@ learning_objectives:
 
 prerequisites:
     - An Arm Linux system with at least 20 GB of free storage.
-    - Python 3.12, Git, `curl` and a C/C++ build toolchain such as GCC.
     - Familiarity with Python, PyTorch, and the Linux command-line.
 
-author: William Watson, Arm
+author: William Watson
 
 # New Learning Paths are opted in for the next manual generated summary/FAQ run.
 # The generator resets this to false after a successful write.
