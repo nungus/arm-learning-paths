@@ -7,7 +7,7 @@ layout: learningpathall
 ---
 
 ## Quantize and export the INT8 model
-You have seen each stage of the pipeline. Using it, you'll now export an INT8 quantization of the model.
+You have seen each stage of the pipeline. Using it, you'll now export an INT8 quantization of the model using TorchAO.
 
 First, change the artifact output directory:
 ```bash

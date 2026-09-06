@@ -1,5 +1,5 @@
 ---
-title: Convert SmolVLA to ExecuTorch for Arm CPU inference
+title: Convert SmolVLA to ExecuTorch for Arm CPU
 
 minutes_to_complete: 60
 
@@ -46,29 +46,33 @@ operatingsystems:
 
 further_reading:
     - resource:
-        title: SmolVLA paper
+        title: SmolVLA research paper
         link: https://arxiv.org/pdf/2506.01844
         type: website
     - resource:
-        title: XNNPACK documentation
-        link: https://docs.pytorch.org/executorch/stable/backends/xnnpack/xnnpack-overview.html
+        title: SmolVLA base model
+        link: https://huggingface.co/lerobot/smolvla_base
+        type: website
+    - resource:
+        title: Getting started with ExecuTorch
+        link: https://docs.pytorch.org/executorch/stable/getting-started.html
         type: documentation
     - resource:
-        title: KleidiAI optimized micro-kernels for Arm CPU
+        title: XNNPACK documentation
+        link: https://docs.pytorch.org/executorch/stable/backends/xnnpack. xnnpack-overview.html
+        type: documentation
+    - resource:
+        title: KleidiAI optimized microkernels for Arm CPUs
         link: https://github.com/ARM-software/kleidiai
+        type: documentation
+    - resource:
+        title: TorchAO documentation
+        link: https://docs.pytorch.org/ao/stable/
         type: documentation
     - resource:
         title: Export and quantize SmolVLA for ONNX Runtime on Arm
         link: https://learn.arm.com/learning-paths/cross-platform/smolvla-onnx-conversion/
-        type: documentationx
-    - resource:
-        title: PLACEHOLDER BLOG 
-        link: PLACEHOLDER BLOG LINK
-        type: blog
-    - resource:
-        title: PLACEHOLDER GENERAL WEBSITE 
-        link: PLACEHOLDER GENERAL WEBSITE LINK
-        type: website
+        type: documentation
 
 ### FIXED, DO NOT MODIFY
 # ================================================================================
