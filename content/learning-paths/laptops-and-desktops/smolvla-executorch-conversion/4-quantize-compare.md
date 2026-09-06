@@ -22,7 +22,7 @@ Now, use the prepared `pipeline.sh` script to run through the whole pipeline wit
     --output-dir artifacts/int8
 ```
 {{% notice Note%}}
-The `--variant int8` option in this learning path does dynamic per-channel INT8 quantization on eligible linear layers in the `vision_encoder` and `denoise_step` components, keeping the `prefix_forward` FP32 to preserve accuracy.
+The `--variant int8` option applies dynamic per-channel INT8 quantization to eligible linear operations in `vision_encoder` and `denoise_step`: weights use per-channel INT8 quantization, while activations are quantized dynamically at runtime. `prefix_forward` remains FP32 to preserve accuracy.
 
 Quantization occurs immediately after loading the model, before splitting and exporting.
 
@@ -115,6 +115,6 @@ INT8 speedup: 2.00x
 
 ## What you've accomplished
 
-You've converted a SmolVLA model to ExecuTorch with eligible linear weights quantized to dynamic INT8, run FP32 and INT8 models using identical inputs on an Arm CPU, and compared their output error and native runtime latency.
+You've converted a SmolVLA model to ExecuTorch with an INT8 quantization, run FP32 and INT8 models using identical inputs on an Arm CPU, and compared their output error and native runtime latency.
 
 From here, you can integrate the ExecuTorch model into a robotics pipeline, experiment with more quantizations and SmolVLA configurations, or optimize for other Arm CPU layouts.

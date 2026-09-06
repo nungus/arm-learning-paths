@@ -79,4 +79,4 @@ python scripts/validate_runner.py
 
 You have exported the FP32 SmolVLA and built a native runner to execute it on the target Arm CPU, validating its output.
 
-Next, you'll quantize a subset of the model's linear layers to INT8, convert that model to ExecuTorch using this pipeline, and compare it to the FP32 variant through the same native runner.
+Next, you'll quantize part of the model to INT8, convert that model to ExecuTorch using this pipeline, and compare it to the FP32 variant through the same native runner.

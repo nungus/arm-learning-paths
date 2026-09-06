@@ -12,7 +12,7 @@ learning_objectives:
     - Compare outputs and latency between the FP32 and INT8 models running on the Arm CPU.
 
 prerequisites:
-    - An Arm Linux system with at least 20 GB of free storage.
+    - An AArch64 Linux system with at least 20 GB of free storage.
     - Familiarity with Python, PyTorch, and the Linux command-line.
 
 author: William Watson
