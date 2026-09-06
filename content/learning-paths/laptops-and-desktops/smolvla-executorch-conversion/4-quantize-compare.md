@@ -16,7 +16,7 @@ export SMOLVLA_ARTIFACTS_DIR=$PWD/artifacts/int8
 
 Now, use the prepared `pipeline.sh` script to run through the whole pipeline with INT8 quantization:
 ```bash
-./scripts/pipeline.sh
+./scripts/pipeline.sh \
     --variant int8 \
     --input-suite "$SMOLVLA_INPUT_SUITE" \
     --output-dir artifacts/int8
@@ -95,15 +95,15 @@ Exclude the vision options to run the vision encoder with the base thread pool a
 Exclude all `[...]cpu-affinity` and `[...]cpu-threads` options to use unregulated core allocations.
 {{% /notice %}}
 
-### Compare accuracy and latency
-Summarise the accuracy and latency results and visualise the output error:
+### Compare benchmark results
+Compare the latency and output accuracy to the PyTorch reference, and visualise the six action-dimension output values:
 ```bash
 python scripts/compare.py \
     --fp32 artifacts/fp32 \
     --int8 artifacts/int8
 ```
 
-Example output:
+Example output from running on a DGX spark:
 ```output
 variant  median_ms  PTE_MB  cosine      MAE       SQNR_dB
 FP32       1443.36  1611.7  0.999995944  0.000982  49.34
@@ -115,6 +115,6 @@ INT8 speedup: 2.00x
 
 ## What you've accomplished
 
-You've converted a SmolVLA model to ExecuTorch with eligible linear weights quantized to dynamic INT8, run FP32 and INT8 models using identical inputs on an Arm CPU, and compared their output accuracy and native runtime latency.
+You've converted a SmolVLA model to ExecuTorch with eligible linear weights quantized to dynamic INT8, run FP32 and INT8 models using identical inputs on an Arm CPU, and compared their output error and native runtime latency.
 
 From here, you can integrate the ExecuTorch model into a robotics pipeline, experiment with more quantizations and SmolVLA configurations, or optimize for other Arm CPU layouts.

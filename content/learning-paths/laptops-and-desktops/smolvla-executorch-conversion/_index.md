@@ -12,7 +12,8 @@ learning_objectives:
     - Compare outputs and latency between the FP32 and INT8 models running on the Arm CPU.
 
 prerequisites:
-    - An Arm Linux system with Python 3.12 installed and at least 20 GB of free storage.
+    - An Arm Linux system with at least 20 GB of free storage.
+    - Python 3.12, Git, `curl` and a C/C++ build toolchain such as GCC.
     - Familiarity with Python, PyTorch, and the Linux command-line.
 
 author: William Watson, Arm
@@ -59,7 +60,7 @@ further_reading:
         type: documentation
     - resource:
         title: XNNPACK documentation
-        link: https://docs.pytorch.org/executorch/stable/backends/xnnpack. xnnpack-overview.html
+        link: https://docs.pytorch.org/executorch/stable/backends/xnnpack/xnnpack-overview.html
         type: documentation
     - resource:
         title: KleidiAI optimized microkernels for Arm CPUs
@@ -72,7 +73,7 @@ further_reading:
     - resource:
         title: Export and quantize SmolVLA for ONNX Runtime on Arm
         link: https://learn.arm.com/learning-paths/cross-platform/smolvla-onnx-conversion/
-        type: documentation
+        type: website
 
 ### FIXED, DO NOT MODIFY
 # ================================================================================

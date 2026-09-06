@@ -70,7 +70,7 @@ that will be handled by the XNNPACK backend at runtime.
 
 During lowering, ExecuTorch converts the partitioned Edge IR into an executable
 program representation. XNNPACK-supported subgraphs are serialized for
-XNNPACK delegate kernels, while unsupported operations remain in the ExecuTorch graph
+XNNPACK delegate kernels, while operations unsupported by XNNPACK remain in the ExecuTorch graph
 and run with portable CPU kernels.
 
 Where possible, higher-level operations may also be decomposed into simpler
@@ -80,8 +80,8 @@ ATen operations that can be backend-delegated.
 We will separately apply exportation and lowering three times: once for each of the **vision encoder**, **prefix forward pass**, and **denoising step**.
 
 There are multiple reasons why this decoupling is beneficial compared to a whole-model export:
-- The pinned ExecuTorch exports the whole denoising for-loop by copying the single-step graph 10 times. This massively prolongs lowering and introduces unnecessary memory overhead.
-- We will utilise different numbers of CPU cores to independently optimize the `vision`, `prefix` and `denoise` executions.
+- The pinned ExecuTorch exports the whole denoising for-loop by copying the single-step graph 10 times in the export. This prolongs lowering and introduces unnecessary memory overhead. Instead, we run one exported iteration 10 times.
+- We will utilise different numbers of CPU cores to independently optimize the `vision`, `prefix` and `denoise` latencies.
 - The latency overhead introduced by wiring the I/O of the three components is negligible, and far outweighed by the above optimization.
 - It is a standard [LeRobot SmolVLA](https://huggingface.co/lerobot/smolvla_base) development split because it provides immediate access to denoising without needing to re-run the vision and prefix stages, which are more costly than one denoising step.
 
