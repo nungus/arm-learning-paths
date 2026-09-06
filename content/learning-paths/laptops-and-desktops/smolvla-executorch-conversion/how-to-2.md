@@ -7,7 +7,20 @@ layout: learningpathall
 ---
 
 ## Download the files
-TODO (add files to the learning path files, commit them, and then try setting up the download from there)
+
+Create a working directory and download the project files for this Learning
+Path:
+
+```bash
+mkdir smolvla-executorch-work
+cd smolvla-executorch-work
+curl -fsSLO https://raw.githubusercontent.com/ArmDeveloperEcosystem/arm-learning-paths/main/content/learning-paths/laptops-and-desktops/smolvla-executorch-conversion/download-project.sh
+bash download-project.sh
+cd smolvla-executorch-arm
+```
+
+The download script recreates the project directory structure and restores the
+executable permissions on the shell and Python scripts.
 
 
 ## Set up the software environment
