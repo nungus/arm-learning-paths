@@ -6,7 +6,7 @@ weight: 3
 layout: learningpathall
 ---
 
-## Download the files
+## Download the project files
 
 Create a working directory and download the project files for this Learning
 Path:
@@ -19,8 +19,7 @@ bash download-project.sh
 cd smolvla-executorch-arm
 ```
 
-The download script recreates the project directory structure and restores the
-executable permissions on the shell and Python scripts.
+The `download-project.sh` script fetches the project directory and configures its scripts to be executable.
 
 
 ## Set up the software environment
@@ -28,7 +27,7 @@ The `setup.sh` script:
 - Pins ExecuTorch v1.4.1 at commit `e4d02f41f7909e8ed5bf4a14ffc520d733453d9f`.
 - Builds the ExecuTorch and XNNPACK + KleidiAI runtime libraries and Python bindings.
 - Installs relevant Python packages.
-- Downloads a fixed SmolVLA checkpoint from Hugging Face.
+- Downloads the pinned SmolVLA checkpoint from Hugging Face.
 - Creates a project-local virtual environment `.venv`.
 
 ```bash
@@ -41,9 +40,7 @@ source env.sh
 
 ## Verify the resources
 
-The setup script performs this check automatically. Run it again to verify the
-pinned packages, ExecuTorch revision and Python binding, XNNPACK and KleidiAI
-runtime build, and SmolVLA checkpoint files:
+Verify the pinned packages, ExecuTorch revision and Python binding, XNNPACK and KleidiAI runtime build, and SmolVLA checkpoint files:
 
 ```bash
 python scripts/check_environment.py
@@ -61,6 +58,6 @@ Environment OK: aarch64, ExecuTorch e4d02f41
 
 
 ## What you've accomplished and what's next
-You have obtained the scripts to convert the model, and configured your environment for building the runtime.
+You have obtained the scripts to convert the model, built the ExecuTorch runtime and configured your environment.
 
-Next, you'll work through the ExecuTorch pipeline to export and lower the FP32 SmolVLA, build the XNNPACK-backed ExecuTorch runner, and validate the converted model's output.
+Next, you'll work through the ExecuTorch pipeline to export and lower the FP32 SmolVLA for Arm CPU, and validate the converted model against the PyTorch reference.

@@ -10,7 +10,7 @@ layout: learningpathall
 
 You will now progress through the model conversion pipeline and validate the converted model output.
 
-By default, artifacts will be placed in `/artifacts/fp32`. You can override this with:
+The artifact will be placed in `/artifacts/fp32`. You can override this with:
 
 ```bash
 export SMOLVLA_ARTIFACTS_DIR=path/to/artifacts/dir
@@ -29,9 +29,9 @@ python scripts/generate_inputs.py \
 `SMOLVLA_CHECKPOINT` and `SMOLVLA_INPUT_SUITE` are other variables with default paths that you can override.
 
 ### Export the model graph
-The provided checkpoint uses BF16 for many of its weights, but ExecuTorch primarily supports FP16 and FP32. We will convert the model to FP32 to ensure there is broad backend coverage.
+The provided checkpoint uses BF16 for many of its weights, but ExecuTorch primarily supports FP16 and FP32. We will convert the model uniformly to FP32 to ensure there is broad backend coverage.
 
-Load the PyTorch model and convert it uniformly to FP32, split it into `vision`, `prefix` and `denoise`, and export their graphs with `torch.export`:
+Load the FP32 PyTorch model, split it into `vision`, `prefix` and `denoise`, and export the graphs with `torch.export`:
 ```bash
 python scripts/export.py \
     --checkpoint "$SMOLVLA_CHECKPOINT" \
@@ -48,13 +48,13 @@ python scripts/lower.py
 ### Validate the export in the Python runtime
 We'll quickly check that the model converted correctly using ExecuTorch's portable Python runtime binding.
 
-Convert the input tensors into the serialised format used by the exports, and check that the exports collectively reproduce the PyTorch reference output:
+Convert the input tensors into the serialised format used by the three exports, and check that they collectively reproduce the PyTorch reference output:
 ```bash
 python scripts/prepare_inputs.py
 python scripts/validate_pte.py
 ```
 
-### Build the runner
+### Build the orchestrator
 Our setup built the ExecuTorch runtime with XNNPACK backend and KleidiAI support.
 
 ExecuTorch's generic runner is useful for executing a single `.pte` program. However, invoking it separately for each stage would require intermediate tensors to be written and transferred between processes. Repeatedly launching it for ten denoising steps would also reload the program each time, adding substantial overhead during runtime.

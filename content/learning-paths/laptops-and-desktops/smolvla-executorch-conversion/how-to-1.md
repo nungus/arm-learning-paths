@@ -6,13 +6,15 @@ weight: 2
 layout: learningpathall
 ---
 
-## SmolVLA architecture
+## Review the SmolVLA architecture
 [SmolVLA](https://arxiv.org/pdf/2506.01844) is a lightweight vision-language-action model with around 450 million parameters. \
 It takes camera images, a language instruction, and the robot state as inputs, and outputs a sequence of robot actions.
 
 ![SmolVLA Architecture#center](smolvla_architecture.png "Architecture diagram from the SmolVLA paper.")
 
-The embedded Vision-Language model processes and concatenates the inputs into a multimodal sequence of context tokens known as the **prefix**.
+{{% notice Note%}}
+The embedded Vision-Language model processes and concatenates the inputs into a multimodal sequence of context tokens known as the **prefix**, which is passed to the action expert.
+{{% /notice %}}
 
 LeRobot's provided SmolVLA checkpoint is configured with:
 - 3 camera image inputs.
@@ -21,14 +23,14 @@ LeRobot's provided SmolVLA checkpoint is configured with:
 
 After denoising, the action expert outputs a clean robot action chunk of shape `[1, 50, 32]`. The provided checkpoint only uses 6 real action dimensions, so padding is removed, leaving a `[1, 50, 6]` tensor. This represents a 50-step action trajectory for each action dimension.
 
-## ExecuTorch workflow overview
+## Learn the ExecuTorch workflow
 ExecuTorch provides a common platform for edge AI inference deployment.
 
 On a high level, you first export your PyTorch model to a hardware-unspecific ExecuTorch intermediate representation (IR). \
-Next, you use a suitable backend to "lower" your model to optimize it for your target hardware. We will use the [XNNPACK backend](https://github.com/google/XNNPACK), which enables highly-optimized Arm CPU inference.
+Next, you use a suitable backend to "lower" your model to an optimized state for your target hardware. We will use the [XNNPACK backend](https://github.com/google/XNNPACK), which enables highly-optimized inference on Arm CPUs.
 
 The model stages in the ExecuTorch conversion pipeline are:
-```
+```output
 PyTorch model (SmolVLA)
       │
       │  torch.export.export(...)
@@ -78,7 +80,7 @@ ATen operations that can be backend-delegated.
 We will separately apply exportation and lowering three times: once for each of the **vision encoder**, **prefix forward pass**, and **denoising step**.
 
 There are multiple reasons why this decoupling is beneficial compared to a whole-model export:
-- The pinned ExecuTorch version exports the whole denoising for-loop by copying the single-step graph 10 times. This massively prolongs lowering and introduces unnecessary memory overhead.
+- The pinned ExecuTorch exports the whole denoising for-loop by copying the single-step graph 10 times. This massively prolongs lowering and introduces unnecessary memory overhead.
 - We will utilise different numbers of CPU cores to independently optimize the `vision`, `prefix` and `denoise` executions.
 - The latency overhead introduced by wiring the I/O of the three components is negligible, and far outweighed by the above optimization.
 - It is a standard [LeRobot SmolVLA](https://huggingface.co/lerobot/smolvla_base) development split because it provides immediate access to denoising without needing to re-run the vision and prefix stages, which are more costly than one denoising step.

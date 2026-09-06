@@ -14,18 +14,25 @@ First, change the artifact output directory:
 export SMOLVLA_ARTIFACTS_DIR=$PWD/artifacts/int8
 ```
 
-Now, use the prepared `pipeline.sh` script to run through the whole pipeline:
+Now, use the prepared `pipeline.sh` script to run through the whole pipeline with INT8 quantization:
 ```bash
-./scripts/pipeline.sh --variant int8 \
+./scripts/pipeline.sh
+    --variant int8 \
     --input-suite "$SMOLVLA_INPUT_SUITE" \
     --output-dir artifacts/int8
 ```
+{{% notice Note%}}
 The `--variant int8` option in this learning path does dynamic per-channel INT8 quantization on eligible linear layers in the `vision_encoder` and `denoise_step` components, keeping the `prefix_forward` FP32 to preserve accuracy.
+
+Quantization occurs immediately after loading the model, before splitting and exporting.
+
+Different SmolVLA configurations can benefit from different quantizations. In particular, fine-tuned models can use static INT8, where real robot task data influences the quantization.
+{{% /notice %}}
 
 ## Compare the FP32 and INT8 executions
 
 ### Inspect the CPU layout and usage
-We can explicitly specify the CPU cores to provide the native runner with rather than rely on non-deterministic allocations in the two different executions for the FP32 and INT8 models. This allows consistent performance and a fair comparison, alongside optimizing the different components' executions. Inspect your CPU core layout with:
+We can explicitly provide CPU cores to the native runner rather than rely on non-deterministic allocation in the two executions for the FP32 and INT8 models. This ensures consistent performance and a fair comparison. It also lets us optimize the different components' executions. Inspect your CPU core layout with:
 ```bash
 lscpu -e=CPU,ONLINE,MAXMHZ,MODELNAME
 ```
@@ -55,17 +62,17 @@ CPU ONLINE    MAXMHZ MODELNAME
  19    yes 3900.0000 Cortex-X925
 ```
 
-Choose a group of CPU cores that is favourable for execution. You'll be provided with the *option* to allocate a group of cores to `vision` and a group of cores to both `prefix` and `denoise`. The recommended configuration is five to eight cores for `vision` and eight to ten cores for the other components.
+You'll be provided with the *option* to allocate a group of cores to `vision` and a group of cores to both `prefix` and `denoise`, which you can experiment with. Decide on a group of CPU cores that is favourable for execution. The recommended configuration is eight to ten cores for `vision` and five to eight cores for the other components.
 
 In the above case, cores `5-9` and `15-19` are faster Cortex-X cores, and will be provided as examples in the section below.
 
-Additionally, if your machine is shared or has other processes running, you can consider this before comparing the models because it will affect inference latency. Inspect the live CPU load with:
+Additionally, if your machine has resource-intensive processes running, this will affect inference latency. You might want to consider this. Inspect the live CPU load with:
 ```bash
 top
 ```
 
 ### Run benchmarks
-Modify and run this command to do a small benchmark of the FP32 model, and then re-run it with `artifacts-dir` set to the INT8 directory (`artifacts/int8` by default):
+Modify and run this command to do a small benchmark of the FP32 model, and then re-run it with `--artifacts-dir artifacts/int8` for the INT8 model:
 
 ```bash
 python scripts/benchmark.py \
@@ -77,35 +84,37 @@ python scripts/benchmark.py \
     --vision-cpu-threads 8 \
     --vision-cpu-affinity 5-9,15-19
 ```
-- `cpu-threads` specifies the ExecuTorch/XNNPACK thread pool size.
+{{% notice Experiment with these options to suit your system.%}}
+Change any arguments. In particular:
 - `cpu-affinity` specifies the cores allocated for the process.
-- The `vision-*` arguments allow you to specify separate worker thread and core allocations to the vision encoder.
-
-Change or remove any arguments to experiment with the execution.
+- `cpu-threads` specifies the ExecuTorch/XNNPACK thread pool size.\
+Recommended: match the number of cores used in your `cpu-affinity`.
+- `vision-*` options allow you to specify separate worker thread and core allocations to the vision encoder.
 
 Exclude the vision options to run the vision encoder with the base thread pool and CPU affinity. \
 Exclude all `[...]cpu-affinity` and `[...]cpu-threads` options to use unregulated core allocations.
+{{% /notice %}}
 
 ### Compare accuracy and latency
-Get a summary of the results:
+Summarise the accuracy and latency results and visualise the output error:
 ```bash
 python scripts/compare.py \
     --fp32 artifacts/fp32 \
     --int8 artifacts/int8
 ```
 
-Example output: Accuracy against the PyTorch reference.
-```{ output_lines = "1-4" }
+Example output:
+```output
 variant  median_ms  PTE_MB  cosine      MAE       SQNR_dB
-FP32       1431.91  1611.7  0.999995944  0.000982  49.34
-INT8        731.31  1022.9  0.999376578  0.010765  28.86
-INT8 speedup: 1.96x
+FP32       1443.36  1611.7  0.999995944  0.000982  49.34
+INT8        720.74  1022.9  0.999376578  0.010765  28.86
+INT8 speedup: 2.00x
 ```
-Comparison of FP32 and INT8 action dimension values:
+
 ![action dimension comparison](action_dimension_comparison.png)
 
 ## What you've accomplished
 
 You've converted a SmolVLA model to ExecuTorch with eligible linear weights quantized to dynamic INT8, run FP32 and INT8 models using identical inputs on an Arm CPU, and compared their output accuracy and native runtime latency.
 
-From here, you can integrate the ExecuTorch model into a robotics pipeline, try different quantizations, or optimize for other CPU layouts.
+From here, you can integrate the ExecuTorch model into a robotics pipeline, experiment with more quantizations and SmolVLA configurations, or optimize for other Arm CPU layouts.

@@ -1,19 +1,19 @@
 ---
 title: Convert SmolVLA to ExecuTorch for Arm CPU inference
 
-minutes_to_complete: 59940
+minutes_to_complete: 60
 
 who_is_this_for: This is an advanced topic for machine learning developers who want to export a vision-language-action model to ExecuTorch for Arm CPU inference.
 
 learning_objectives: 
-    - Export SmolVLA from PyTorch to ExecuTorch, and lower the model to Arm CPU using XNNPACK
-    - Run the FP32 ExecuTorch model on Arm CPU and validate its output against the PyTorch model
-    - Quantize eligible linear layers across the model
-    - Compare outputs and latency between the FP32 model and your chosen quantization
+    - Export SmolVLA from PyTorch to ExecuTorch, and lower the model to run on Arm CPU using the XNNPACK backend.
+    - Run the FP32 ExecuTorch model on Arm CPU and validate its output against the PyTorch model.
+    - Export a model to ExecuTorch with eligible linear weights quantized to INT8.
+    - Compare outputs and latency between the FP32 and INT8 models running on the Arm CPU.
 
 prerequisites:
-    - An Arm64 Linux system with Python 3.12 installed
-    - Familiarity with Python, PyTorch, and the Linux command-line
+    - An Arm Linux system with Python 3.12 installed and at least 20 GB of free storage.
+    - Familiarity with Python, PyTorch, and the Linux command-line.
 
 author: William Watson, Arm
 
