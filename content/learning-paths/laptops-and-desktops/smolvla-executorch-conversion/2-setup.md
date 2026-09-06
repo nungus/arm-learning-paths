@@ -6,6 +6,21 @@ weight: 3
 layout: learningpathall
 ---
 
+## Install the required tools
+
+We'll need `git` to clone the ExecuTorch repository, `curl` to fetch the conversion scripts, a C++ build toolchain, and a Python3.12 virtual environment:
+
+```bash
+sudo apt update
+sudo apt install -y \
+    git \
+    curl \
+    build-essential \
+    python3.12 \
+    python3.12-dev \
+    python3.12-venv
+```
+
 ## Download the project files
 
 Create a working directory and download the project files for this Learning

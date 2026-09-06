@@ -68,13 +68,12 @@ The XNNPACK partitioner inspects this graph and groups the operations that
 XNNPACK can execute. These supported regions are replaced with delegate calls
 that will be handled by the XNNPACK backend at runtime.
 
-During lowering, ExecuTorch converts the partitioned Edge IR into an executable
-program representation. XNNPACK-supported subgraphs are serialized for
-XNNPACK delegate kernels, while operations unsupported by XNNPACK remain in the ExecuTorch graph
-and run with portable CPU kernels.
+During backend lowering, XNNPACK-supported subgraphs are converted into delegate data and replaced in the Edge graph with **XNNPACK delegate calls**. Operations that XNNPACK cannot execute remain in the Edge graph, provided that the ExecuTorch runtime has suitable **fallback kernels** for them.
 
-Where possible, higher-level operations may also be decomposed into simpler
-ATen operations that can be backend-delegated.
+Where possible, higher-level operations may also be **decomposed** into simpler
+ATen operations that can be backend-delegated. If an operation is supported by neither the backend nor fallback, you can manually implement a decomposition into backend/fallback-supported ops.
+
+Finally, `to_executorch()` applies runtime-specific transformations, including memory planning, and produces the ExecuTorch program that is serialized as a `.pte` file.
 
 ### Split architecture
 We will separately apply exportation and lowering three times: once for each of the **vision encoder**, **prefix forward pass**, and **denoising step**.

@@ -41,7 +41,7 @@ printf 'Setup locations:\n  virtual environment: %s\n  ExecuTorch source: %s\n  
     "$VENV" "$EXECUTORCH_ROOT" "$CHECKPOINT"
 
 unset PYTHONHOME PYTHONPATH
-python3 -m venv "$VENV"
+python3.12 -m venv "$VENV"
 export VIRTUAL_ENV="$VENV"
 export PATH="$VENV/bin:$PATH"
 "$VENV/bin/python" -m pip install --upgrade \
